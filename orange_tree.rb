@@ -10,6 +10,7 @@ class OrangeTree
     @water = rand(1..9)
     @cash = rand(0.0..10).round(2)
     @sold_oranges = 0
+    @total_oranges = 0
     puts "Congratulations for planting your new Orange Tree, it is currently #{@height} foot tall but doesn't have any oranges on it yet."
     puts "Perhaps you need to fertilize, water, or just pass some time and wait for it to get a bit older to start producing fruit."
     puts
@@ -96,7 +97,6 @@ class OrangeTree
     if amount == 0
       user_selection
     end
-
     growth = rand().round(1)
     new_oranges = 0
     @height += growth
@@ -144,6 +144,7 @@ class OrangeTree
     puts "Oranges on tree = #{@oranges}"
     puts "Oranges in basket = #{@picked_oranges}"
     puts "Money = $#{@cash.round(2)}"
+    seperator
   end
 
   def store
@@ -163,7 +164,7 @@ class OrangeTree
   end
   def purchase_fertilizer
     price = rand(0.0..2.0).round(2)
-    puts "The price for fertilizer is currently #{price}. How much would you like to buy?"
+    puts "The price for fertilizer is currently $#{price}. How much would you like to buy?"
     amount = gets.chomp.to_i
     if (amount * price) > @cash
       puts "You don't have enough money to buy that much fertilizer"
@@ -172,7 +173,7 @@ class OrangeTree
     end
     @user_fertilizer += amount
     @cash -= (amount * price)
-    puts "Thank you for your purchase. You now have #{@user_fertilizer} fertilizer to use and $#{@cash.round(2)} left"
+    puts "Thank you for your purchase of #{amount} for a total of $#{amount * price}. You now have #{@user_fertilizer} fertilizer to use and $#{@cash.round(2)} left"
     seperator
   end
 
@@ -218,6 +219,7 @@ class OrangeTree
   end
 
   def fruit_production
+    oranges = 0
     if @tree_fertilizer <= 2
       puts "Your tree didn't produce any oranges this year due to lack of fertilizer"
       seperator
@@ -225,43 +227,46 @@ class OrangeTree
     elsif @water <= 2
       puts "Your tree didn't produce any oranges this year due to lack of water"
       seperator
-      return
-    end
-    if @age < 1
-      puts  "Your tree didn't produce any oranges because it is still to young"
-      seperator
+      # return
     end
     if @age >= 1 and @age < 4
-      @oranges += rand(1..3)
+      oranges += rand(1..3)
     elsif @age >= 4 and @age < 6
-      @oranges += rand(1..5)
+      oranges += rand(1..5)
     elsif @age >= 6 and @age < 8
-      @oranges += rand(3..10)
+      oranges += rand(3..10)
     elsif @age >= 8
-      @oranges += rand(7..15)
+      oranges += rand(7..15)
     end
     case @height
     when 4..10
-      @oranges += rand(3..5)
+      oranges += rand(3..5)
     when 11..20
-      @oranges += rand(10..20)
+      oranges += rand(10..20)
     when 21..30
-      @oranges += rand(20..30)
+      oranges += rand(20..30)
     when 31..10000
-      @oranges += rand(30..50)
+      oranges += rand(30..50)
     end
+    @oranges += oranges
+    @total_oranges += oranges
+    oranges = 0
   end
 
   def time_passes amount
     month = {0 => 'January', 1 => 'January', 2 => 'Feburary', 3 => 'March', 4 => 'April', 5 => 'May', 6 => 'June', 7 => 'July', 8 => 'August', 9 => 'September', 10 => 'October', 11 => 'November', 12 => 'December'}
     @time += amount
+    if hail_storm?
+      if @oranges > 1
+      x = rand(1..@oranges)
+      @oranges -= x 
+      puts "XXXXXX A hail storm came through and ruined #{x} oranges on your tree XXXXXX"
+      end
+    end
     if one_year_passes?
       @age += 1
       if tree_dies?
         death_summary
-        puts "Your tree died, it was #{@age} years old. :("
-        puts "It had #{@tree_fertilizer} fertilizer left"
-        puts "it had #{@water} water left"
         seperator
         exit
       end
@@ -274,13 +279,14 @@ class OrangeTree
       else @time = 0
       end
       puts "It is currently #{month[@time]} of year #{@age}."
-      @oranges = 0 #all oranges fall off the tree each year
+      @oranges = 0
       height
       fruit_production
       puts "Your tree survived another year, is #{@age} years old and is now #{@height.round(2)} feet tall with #{@oranges} oranges on it."
       seperator
     else 
       puts "The current month is #{month[@time]}"
+      seperator
     end
   end
 
@@ -303,17 +309,24 @@ class OrangeTree
     elsif @water < 1
       puts "Your tree ran out of water"
     end
-    puts "Height = #{@height}"
-    puts "Fertilizer = #{@tree_fertilizer}"
-    puts "Water = #{@water}"
-    puts "Oranges sold = #{@sold_oranges}"
-    puts "Money = #{@cash.round(2)}"
+    puts "-Height = #{@height.round(2)}"
+    puts "-Fertilizer = #{@tree_fertilizer}"
+    puts "-Water = #{@water}"
+    puts "-Total oranges grown = #{@total_oranges}"
+    puts "-Oranges sold = #{@sold_oranges}"
+    puts "-Money = $#{@cash.round(2)}"
   end
 
   def seperator
     puts "*"*100
   end
+
+  def hail_storm?
+    rand(0..1).odd?
+  end
 end
 
 tree = OrangeTree.new
+
+
 
