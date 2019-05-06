@@ -169,11 +169,11 @@ class OrangeTree
     if (amount * price) > @cash
       puts "You don't have enough money to buy that much fertilizer"
       purchase_fertilizer
-      seperator
+    else
+      @user_fertilizer += amount
+      @cash -= (amount * price)
+      puts "Thank you for your purchase of #{amount} for a total of $#{amount * price}. You now have #{@user_fertilizer} fertilizer to use and $#{@cash.round(2)} left"
     end
-    @user_fertilizer += amount
-    @cash -= (amount * price)
-    puts "Thank you for your purchase of #{amount} for a total of $#{amount * price}. You now have #{@user_fertilizer} fertilizer to use and $#{@cash.round(2)} left"
     seperator
   end
 
@@ -256,11 +256,21 @@ class OrangeTree
   def time_passes amount
     month = {0 => 'January', 1 => 'January', 2 => 'Feburary', 3 => 'March', 4 => 'April', 5 => 'May', 6 => 'June', 7 => 'July', 8 => 'August', 9 => 'September', 10 => 'October', 11 => 'November', 12 => 'December'}
     @time += amount
-    if hail_storm?
-      if @oranges > 1
-      x = rand(1..@oranges)
-      @oranges -= x 
-      puts "XXXXXX A hail storm came through and ruined #{x} oranges on your tree XXXXXX"
+    # if hail_storm?
+    #   if @oranges > 1
+    #   x = rand(1..@oranges)
+    #   @oranges -= x 
+    #   puts "XXXXXX A hail storm came through and ruined #{x} oranges on your tree XXXXXX"
+    # end
+    if @oranges > 1
+      if hail_storm?
+        x = rand(1..@oranges)
+        @oranges -= x 
+      end
+      if oranges_spoiled?
+        x = rand(1..@picked_oranges)
+        @picked_oranges -= x 
+        puts "XXXXXX #{x} of the oranges in your basket spoiled! XXXXXX"
       end
     end
     if one_year_passes?
@@ -290,16 +300,11 @@ class OrangeTree
     end
   end
 
-
-  def one_year_passes?
-    @time >= 12
-  end
-
   def tree_dies?
     @death = rand(8..20)
     @age >= @death or @tree_fertilizer > 10 or @tree_fertilizer == 0 or @water > 10 or @water == 0 #or @height > 100
   end
-
+  
   def death_summary
     #PUT WHY THE TREE DIED AND OTHER STATS IN HERE
     if @age >= @death 
@@ -316,13 +321,21 @@ class OrangeTree
     puts "-Oranges sold = #{@sold_oranges}"
     puts "-Money = $#{@cash.round(2)}"
   end
-
+  
   def seperator
     puts "*"*100
+  end
+  
+  def one_year_passes?
+    @time >= 12
   end
 
   def hail_storm?
     rand(0..1).odd?
+  end
+
+  def oranges_spoiled?
+    rand(0..1).even?
   end
 end
 
